@@ -1,0 +1,8 @@
+Host bastion *.compute.internal
+    HostName 
+    User ec2-user
+    IdentityFile ~/ansible.pem
+Host 10.* *.compute.internal
+    ProxyJump bastion
+    IdentityFile ~/ansible.pem
+    User ec2-user
