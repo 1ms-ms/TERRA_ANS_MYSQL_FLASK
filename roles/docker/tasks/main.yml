@@ -1,0 +1,77 @@
+- name: Update all packages
+  yum:
+    name: '*'
+    state: latest
+    update_only: yes
+
+- name: Ensure a list of yum packages are installed
+  yum:
+    name: "{{ packages }}"
+    state: latest
+    update_cache: yes
+  vars:
+    packages:
+    - yum-utils
+    - device-mapper-persistent-data
+    - lvm2
+    - amazon-linux-extras
+    - docker
+
+- name: Add extras repository
+  shell: yum-config-manager --enable extras
+
+- name: Enable Some packages from amazon-linux-extras packages
+  shell: "amazon-linux-extras enable python3.8"
+
+- name: clean yum metadata cache
+  command: yum clean metadata
+  args:
+    warn: false
+
+- name: Ensure a list of yum packages are installed
+  yum:
+    name: python3.8
+    state: latest
+    update_cache: yes
+- name: Install Docker Module for Python
+  pip:
+    name: docker    
+- name: Install requests python package
+  pip:
+    name: requests
+  vars:
+    ansible_python_interpreter: /usr/bin/python3
+
+- name: Enable Docker CE service at startup
+  systemd:
+    name: docker
+    state: started
+    enabled: yes
+
+
+- name: build container image
+  docker_image:
+    name: flask_app
+    build:
+      path: /home/ec2-user/
+    source: build  
+
+- name: Create "docker" group
+  group:
+    name: docker
+    state: present
+
+- name: Add ec2-user to the group
+  user:
+    name: ec2-user
+    group: docker
+
+- name: run container
+  docker_container:
+    name: flask_container
+    image: flask_app
+    state: started
+    volumes:
+    - /home/ec2-user/my.conf:/app/my.conf
+    published_ports: 5000:5000
+    auto_remove: yes
