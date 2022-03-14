@@ -1,0 +1,12 @@
+plugin: aws_ec2
+aws_access_key: 
+aws_secret_key: 
+regions:
+  - eu-west-1
+filters:
+  tag:Function: 
+  - Application
+  - Database
+keyed_groups:
+  - prefix: ""
+    key: tags
