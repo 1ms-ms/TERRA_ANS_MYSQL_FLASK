@@ -1,0 +1,61 @@
+- name: Create my_config.conf file
+  template:
+    src: ./roles/maria_db/templates/template.j2
+    dest: /home/ec2-user/my.conf
+- name: Make sure pymysql is present
+  pip:
+    name: pymysql
+    state: present
+- name: MYSQL
+  yum:
+    name: mariadb-server
+    state: latest
+- name: Start service MariaDB, if not started
+  service:
+    name: mariadb
+    state: started
+    enabled: yes  
+#configuration
+- name: update mysql root password for all root accounts  
+  mysql_user:  
+    name: root  
+    host: localhost  
+    password: password 
+    login_user: root 
+    login_password: password  
+    check_implicit_admin: yes  
+    priv: "*.*:ALL,GRANT"  
+
+
+- name: check if DB exists
+  shell: mysql -e 'SHOW DATABASES;' | grep -c "{{ database }}"
+  register: dbstatus
+  failed_when: dbstatus.rc == 2
+
+- name: create a new database  
+  mysql_db: name="{{ database }}" state=present login_user=root login_password=password
+  register: database_exists
+  when: dbstatus.stdout == "0"
+
+- name: Create database user 
+  mysql_user:
+    login_user: root 
+    login_password: password
+    name: "{{ user }}"
+    password: "{{ password }}"
+    host: 172.17.0.2
+    priv: "*.*:ALL,GRANT"
+    state: present
+
+- name: check if table exists
+  shell: mysql -u=root --password=password --database="{{ database }}" -e 'SHOW TABLES;' | grep note
+  register: tablerc
+  failed_when: tablerc.rc == 2
+
+- name: add sample data to the destination 
+  copy: src=/home/ms/terra_ansible_mysql/infrastructure-TF-ANSIBLE/ansible/config.sql dest=/tmp/config.sql 
+  failed_when: tablerc.rc == 0
+
+- name: insert sample data into database  
+  mysql_db: name="{{ database }}" state=import target=/tmp/config.sql login_user=root login_password=password
+  failed_when: tablerc.rc == 0
