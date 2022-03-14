@@ -1,0 +1,15 @@
+- name: Database creation and settings
+  hosts: _Function_Database
+  become: true
+  roles:
+    - role: maria_db   
+- name: Copy files from host
+  hosts: _Function_Application
+  become: true
+  roles:
+    - role: server       
+- name: Install docker and run dockerfile
+  hosts: _Function_Application
+  become: true
+  roles:
+    - role: docker     
