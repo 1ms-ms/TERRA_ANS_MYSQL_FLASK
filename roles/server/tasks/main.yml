@@ -1,0 +1,6 @@
+- name: Copy files from host
+  copy: src={{ item.src }} dest={{ item.dest }}
+  with_items:
+    - { src: '~/Dockerfile', dest: '/home/ec2-user/Dockerfile' }
+    - { src: '~/requirements.txt', dest: '/home/ec2-user/requirements.txt' }
+    - { src: '~/notes_mysql.py', dest: '/home/ec2-user/notes_mysql.py' }
