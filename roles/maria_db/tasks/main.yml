@@ -1,7 +1,7 @@
-- name: Create my_config.conf file
-  template:
-    src: ./roles/maria_db/templates/template.j2
-    dest: /home/ec2-user/my.conf
+- name: Install pip
+  yum:
+    name: pip 
+    state: present    
 - name: Make sure pymysql is present
   pip:
     name: pymysql
@@ -43,7 +43,7 @@
     login_password: password
     name: "{{ user }}"
     password: "{{ password }}"
-    host: 172.17.0.2
+    host: "{{ hostvars[groups['_Function_Application'][0]]['ansible_default_ipv4']['address'] }}"
     priv: "*.*:ALL,GRANT"
     state: present
 
