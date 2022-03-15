@@ -1,4 +1,4 @@
 user: testuser
-host: 172.17.0.1
+host: "{{ hostvars[groups['_Function_Database'][0]]['ansible_default_ipv4']['address'] }}"
 password: testpass
 database: testdb
