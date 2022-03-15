@@ -1,3 +1,6 @@
+- name: Gather facts
+  hosts: "all"
+  ignore_errors: yes
 - name: Database creation and settings
   hosts: _Function_Database
   become: true
