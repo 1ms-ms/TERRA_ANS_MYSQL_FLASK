@@ -3,7 +3,10 @@
     name: '*'
     state: latest
     update_only: yes
-
+- name: Install pip
+  yum:
+    name: pip 
+    state: present 
 - name: Ensure a list of yum packages are installed
   yum:
     name: "{{ packages }}"
@@ -65,6 +68,10 @@
   user:
     name: ec2-user
     group: docker
+- name: Create my_config.conf file
+  template:
+    src: ./roles/docker/templates/template.j2
+    dest: /home/ec2-user/my.conf
 
 - name: run container
   docker_container:
