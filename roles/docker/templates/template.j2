@@ -1,0 +1,5 @@
+[connector_python]
+user: {{ user }}
+host: {{ hostvars[groups['_Function_Database'][0]]['ansible_default_ipv4']['address'] }}
+password: {{ password }}
+database: {{ database }}
