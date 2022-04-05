@@ -1,4 +1,4 @@
-Host bastion *.compute.internal
+Host bastion 
     HostName 
     User ec2-user
     IdentityFile ~/ansible.pem
